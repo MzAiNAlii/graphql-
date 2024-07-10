@@ -1,0 +1,226 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  BUSINESS_OWNER
+  COMMUNITY_MEMBER
+  VENDOR
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  DISAPPROVED
+  EXPIRED
+}
+
+enum ItemRole {
+  BUSINESS
+  FREE_STUFF
+  GARAGE
+  VENDOR
+}
+
+enum ReserveStatus {
+  RESERVED
+  UNRESERVED
+}
+
+model User {
+  id          String       @id @default(uuid())
+  email       String
+  password    String
+  name        String?
+  phoneNumber String?
+  role        Role
+  address     UserAddress?
+  eventId     String?
+  event       Event[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
+  Item        Item[]
+  favorite    Favorite[]
+  reserve     Reserve[]
+  imageUrl    String?
+  isBlocked   Boolean      @default(false)
+  isDelete    Boolean?     @default(false)
+  isVerify    Boolean?     @default(false)
+
+  @@unique([email])
+  @@map("user")
+}
+
+model UserAddress {
+  id        String   @id @default(uuid())
+  longitude Decimal?
+  latitude  Decimal?
+  city      String?
+  state     String?
+  country   String?
+  address   String?
+  zipCode   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("user_address")
+}
+
+model Event {
+  id             String        @id @default(uuid())
+  title          String
+  description    String
+  photoUrl       String
+  eventAddressId String?
+  eventAddress   EventAddress? @relation(fields: [eventAddressId], references: [id])
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  eventImage     EventImage[]
+  reserve        Reserve[]
+  eventDate      DateTime
+  startDateTime  DateTime
+  endDateTime    DateTime
+  status         Status?       @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now())
+
+  @@map("event")
+}
+
+model EventImage {
+  id        String   @id @default(uuid())
+  photoUrl  String[]
+  sequence  Int      @default(0)
+  eventId   String?
+  events    Event?   @relation(fields: [eventId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("event_image")
+}
+
+model EventAddress {
+  id        String   @id @default(uuid())
+  longitude Decimal
+  latitude  Decimal
+  city      String
+  state     String
+  country   String
+  address   String
+  event     Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("event_address")
+}
+
+model Item {
+  id                        String        @id @default(uuid())
+  title                     String
+  email                     String?
+  phoneNumber               String?
+  description               String
+  merchandisePhotoUrl       String?
+  businessLogoUrl           String?
+  setUpPictureUrl           String?
+  itemRole                  ItemRole
+  price                     Decimal?
+  website                   String?
+  availabilityStartDateTime DateTime?
+  availabilityEndDateTime   DateTime?
+  itemDate                  DateTime?
+  status                    Status?       @default(PENDING)
+  userId                    String?       @map("userId")
+  user                      User?         @relation(fields: [userId], references: [id])
+  userRole                  Role
+  itemImage                 ItemImage[]
+  itemCategoryId            String?
+  itemCategory              ItemCategory? @relation(fields: [itemCategoryId], references: [id])
+  favorite                  Favorite[]
+  deletionDateTime          DateTime?
+  approvalDateTime          DateTime?
+  itemAddressId             String        @unique
+  itemAddress               ItemAddress   @relation(fields: [itemAddressId], references: [id])
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @default(now())
+
+  @@map("item")
+}
+
+model ItemAddress {
+  id        String   @id @default(uuid())
+  longitude Decimal
+  latitude  Decimal
+  city      String
+  state     String
+  country   String
+  address   String
+  item      Item?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("item_address")
+}
+
+model ItemImage {
+  id        String   @id @default(uuid())
+  url       String
+  sequence  Int      @default(0)
+  itemId    String?
+  item      Item?    @relation(fields: [itemId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("item_image")
+}
+
+model ItemCategory {
+  id        String    @id @default(uuid())
+  name      String?
+  type      ItemRole?
+  item      Item[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+
+  @@map("item_category")
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String?
+  itemId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  item      Item?    @relation(fields: [itemId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("favorite")
+}
+
+model Reserve {
+  id        String         @id @default(uuid())
+  userId    String?
+  eventId   String?
+  status    ReserveStatus? @default(UNRESERVED)
+  user      User?          @relation(fields: [userId], references: [id])
+  event     Event?         @relation(fields: [eventId], references: [id])
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@map("reserve")
+}

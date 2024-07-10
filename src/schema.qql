@@ -1,0 +1,324 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserAddress {
+  id: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  longitude: Float
+  latitude: Float
+  userId: String
+}
+
+type User {
+  id: String
+  email: String!
+  name: String!
+  role: String
+  address: UserAddress
+  imageUrl: String
+  phoneNumber: String
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+"""
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar Timestamp
+
+type Message {
+  message: String!
+}
+
+type Login {
+  message: String!
+  token: String!
+  user: User!
+}
+
+type Signup {
+  message: String!
+  user: User!
+}
+
+type EventAddress {
+  id: String
+  longitude: Float
+  latitude: Float
+  city: String
+  state: String
+  country: String
+  address: String
+  eventId: String
+}
+
+type Event {
+  id: String
+  userId: String
+  title: String
+  description: String
+  photoUrl: String
+  status: String
+  eventAddress: EventAddress
+  eventDate: Timestamp
+  startDateTime: Timestamp
+  endDateTime: Timestamp
+  reserve: Boolean
+  user: User
+}
+
+type Pagination {
+  currentPage: Float
+  pageSize: Float
+  totalPages: Float
+  total: Float
+}
+
+type GetAllEvent {
+  event: [Event!]
+  pagination: Pagination
+}
+
+type Reserve {
+  id: String
+  event: Event
+  user: User
+  eventId: String
+  userId: String
+  status: String
+  createdAt: String
+  updatedAt: String
+  pagination: Pagination
+}
+
+type GetUserReservedEvent {
+  reserve_event: [Reserve!]
+  pagination: Pagination
+}
+
+type ItemAddress {
+  id: String
+  longitude: Float
+  latitude: Float
+  city: String
+  state: String
+  country: String
+  address: String
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+type ItemImage {
+  id: String
+  url: String!
+  sequence: Float!
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+type ItemCategory {
+  id: String!
+  name: String!
+  type: String!
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+type Item {
+  id: String
+  email: String
+  title: String
+  phoneNumber: String
+  description: String
+  merchandisePhotoUrl: String
+  businessLogoUrl: String
+  setUpPictureUrl: String
+  itemRole: String
+  price: Float
+  website: String
+  itemDate: Timestamp
+  availabilityStartDateTime: Timestamp
+  availabilityEndDateTime: Timestamp
+  approved: Boolean
+  deletionDateTime: Timestamp
+  approvalDateTime: Timestamp
+  itemAddress: ItemAddress
+  itemImage: [ItemImage!]
+  itemCategory: ItemCategory
+  createdAt: Timestamp
+  updatedAt: Timestamp
+  isFavorite: Boolean
+  user: User
+}
+
+type GetItem {
+  item: [Item!]
+  pagination: Pagination
+}
+
+type Query {
+  geAllUser: [User!]!
+  getEventDetail(id: String!): Event!
+  getAllEvents(query: PaginationQueryDto!): GetAllEvent!
+  getUserEvent(query: PaginationQueryDto!): GetAllEvent!
+  getUserReserveEvent(query: PaginationQueryDto!): GetUserReservedEvent!
+  getReserveEventDetail(id: String!): Reserve!
+  getItem(query: GetItemQueryDto!): GetItem!
+  getItemDetailById(id: String!): Item!
+  getPostsByItemRole(itemRole: String!): [Item!]!
+  getUserPost(query: PaginationQueryDto!): GetItem!
+  getItemByRoleAndStatus(query: GetItemByRoleAndStatusQueryDto!): GetItem!
+  getItemByRoleDetail(id: String!): Item!
+}
+
+input PaginationQueryDto {
+  page: Float!
+  size: Float!
+}
+
+input GetItemQueryDto {
+  latitude: Float
+  longitude: Float
+  radius: Float
+  page: Float
+  size: Float
+  sortType: String
+  filter: String
+  itemRole: String
+  categoryName: String
+  title: String
+}
+
+input GetItemByRoleAndStatusQueryDto {
+  pagination: PaginationQueryDto
+  role: String!
+  status: String
+  title: String
+}
+
+type Mutation {
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  deleteUser: Message!
+  signup(userSignupInput: UserSignupInput!): Signup!
+  login(loginInput: LoginInput!): Login!
+  createEvent(createEventInput: CreateEventInput!): Event!
+  createReserveEvent(eventId: String!): Reserve!
+  updateEventStatus(updateEventStatusInput: UpdateEventStatusInput!): Event!
+  createItem(createItemInput: CreateItemInput!): Item!
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+  password: String
+  role: String
+  imageUrl: String
+  phoneNumber: String
+  address: UserAddressDto
+}
+
+input UserAddressDto {
+  id: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  longitude: Float
+  latitude: Float
+  userId: String
+}
+
+input UserSignupInput {
+  name: String!
+  email: String!
+  password: String!
+  role: String!
+  imageUrl: String
+  phoneNumber: String
+  address: UserAddressDto
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input CreateEventInput {
+  id: String
+  title: String!
+  description: String!
+  photoUrl: String!
+  status: String
+  eventAddress: EventAddressInput!
+  eventDate: Timestamp!
+  startDateTime: Timestamp!
+  endDateTime: Timestamp!
+}
+
+input EventAddressInput {
+  id: String
+  longitude: Float!
+  latitude: Float!
+  city: String!
+  state: String!
+  country: String!
+  address: String!
+  eventId: String
+}
+
+input UpdateEventStatusInput {
+  eventId: String!
+  status: String!
+}
+
+input CreateItemInput {
+  id: String
+  email: String!
+  title: String!
+  phoneNumber: String!
+  description: String!
+  merchandisePhotoUrl: String
+  businessLogoUrl: String
+  setUpPictureUrl: String
+  itemRole: String!
+  price: Float
+  website: String
+  itemDate: Timestamp
+  availabilityStartDateTime: Timestamp
+  availabilityEndDateTime: Timestamp
+  approved: Boolean
+  deletionDateTime: Timestamp
+  approvalDateTime: Timestamp
+  itemAddress: ItemAddressDto
+  itemImage: ItemImageDto
+  itemCategory: ItemCategoryDto
+}
+
+input ItemAddressDto {
+  id: String
+  longitude: Float!
+  latitude: Float!
+  city: String!
+  state: String!
+  country: String!
+  address: String!
+}
+
+input ItemImageDto {
+  id: String
+  url: String!
+  sequence: Float!
+  itemId: String
+}
+
+input ItemCategoryDto {
+  id: String!
+  name: String
+  itemId: String
+}
