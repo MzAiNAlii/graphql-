@@ -8,7 +8,6 @@ import { GetUser } from 'src/decorator/user.decorator';
 import { User } from '@prisma/client';
 import { GetItemQueryDto } from './dto/get-item-query.dto';
 import { GetItem } from './entities/get-item.entity';
-import { Pagination } from './entities/pagination.entity';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 import { GetItemByRoleAndStatusQueryDto } from './dto/get-item-by-role-and-status-query.dto';
 

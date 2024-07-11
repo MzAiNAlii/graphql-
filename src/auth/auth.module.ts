@@ -8,6 +8,7 @@ import { JwtGuard } from './guard/jwt-guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy.service';
+import { OtpService } from './otp.service';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { JwtStrategy } from './strategies/jwt.strategy.service';
       }),
     }),
   ],
-  providers: [AuthResolver, AuthService, JwtStrategy, JwtGuard],
+  providers: [AuthResolver, AuthService, JwtStrategy, JwtGuard, OtpService],
 
   exports: [AuthService, JwtGuard],
 })

@@ -60,6 +60,19 @@ export class UserService {
     });
   }
 
+  async findByEmail(email: string) {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          email: email,
+        },
+      });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateUser(userId: string, payload: UpdateUserInput) {
     try {
       const dataToUpdate: any = {
@@ -119,6 +132,22 @@ export class UserService {
           throw new ForbiddenException('Not Found');
         }
       }
+      throw error;
+    }
+  }
+
+  async verifyUser(email: string) {
+    try {
+      await this.findByEmail(email);
+      return await this.prisma.user.update({
+        where: {
+          email,
+        },
+        data: {
+          isVerify: true,
+        },
+      });
+    } catch (error) {
       throw error;
     }
   }

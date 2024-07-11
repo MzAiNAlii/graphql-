@@ -10,8 +10,8 @@ export class User {
   @Field()
   email: string;
 
-  @Field()
-  name: string;
+  @Field({ nullable: true })
+  name?: string;
 
   @Field({ nullable: true })
   role?: Role;

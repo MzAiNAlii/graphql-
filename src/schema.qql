@@ -17,7 +17,7 @@ type UserAddress {
 type User {
   id: String
   email: String!
-  name: String!
+  name: String
   role: String
   address: UserAddress
   imageUrl: String
@@ -44,6 +44,11 @@ type Login {
 type Signup {
   message: String!
   user: User!
+}
+
+type Otp {
+  message: String
+  user: User
 }
 
 type EventAddress {
@@ -163,6 +168,7 @@ type GetItem {
 
 type Query {
   geAllUser: [User!]!
+  resendOtp(resendOtpInput: ResendOtpInput!): Otp!
   getEventDetail(id: String!): Event!
   getAllEvents(query: PaginationQueryDto!): GetAllEvent!
   getUserEvent(query: PaginationQueryDto!): GetAllEvent!
@@ -174,6 +180,10 @@ type Query {
   getUserPost(query: PaginationQueryDto!): GetItem!
   getItemByRoleAndStatus(query: GetItemByRoleAndStatusQueryDto!): GetItem!
   getItemByRoleDetail(id: String!): Item!
+}
+
+input ResendOtpInput {
+  id: String!
 }
 
 input PaginationQueryDto {
@@ -206,6 +216,9 @@ type Mutation {
   deleteUser: Message!
   signup(userSignupInput: UserSignupInput!): Signup!
   login(loginInput: LoginInput!): Login!
+  sendOtp(sendOtpInput: SendOtpInput!): Otp!
+  verifyOtp(verifyOtpInput: VerifyOtpInput!): Otp!
+  resetPassword(resetPasswordInput: ResetPasswordInput!): Otp!
   createEvent(createEventInput: CreateEventInput!): Event!
   createReserveEvent(eventId: String!): Reserve!
   updateEventStatus(updateEventStatusInput: UpdateEventStatusInput!): Event!
@@ -247,6 +260,21 @@ input UserSignupInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input SendOtpInput {
+  email: String!
+}
+
+input VerifyOtpInput {
+  id: String!
+  code: String!
+}
+
+input ResetPasswordInput {
+  id: String!
+  password: String!
+  confirmPassword: String!
 }
 
 input CreateEventInput {

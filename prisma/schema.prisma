@@ -81,6 +81,20 @@ model UserAddress {
   @@map("user_address")
 }
 
+model Otp {
+  id         String   @id @default(uuid())
+  email      String
+  code       String
+  isUsed     Boolean  @default(false)
+  isExpired  Boolean  @default(false)
+  type       String?
+  expireTime String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  @@map("otp")
+}
+
 model Event {
   id             String        @id @default(uuid())
   title          String

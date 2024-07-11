@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -10,6 +12,8 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserSignupInput } from './dto/user-signup.input';
 import { LoginInput } from './dto/login.input';
+import { OtpService } from './otp.service';
+import { ResetPasswordInput } from './dto/reset-password.input';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +21,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly otpService: OtpService,
   ) {}
 
   private assignJwtToken(user: User) {
@@ -68,6 +73,44 @@ export class AuthService {
         token,
       };
     } catch (error) {
+      throw error;
+    }
+  }
+
+  async resetPassword(payload: ResetPasswordInput) {
+    try {
+      const verifyOtp = await this.otpService.otpUsed(payload.id);
+
+      if (!verifyOtp) {
+        throw new BadRequestException(
+          'Cannot reset password for unverified user',
+        );
+      }
+      const email = verifyOtp.email;
+
+      if (payload.password !== payload.confirmPassword) {
+        throw new ForbiddenException('Password not match');
+      }
+
+      payload.password = bcrypt.hashSync(payload.password, 8);
+      await this.prisma.user.update({
+        where: {
+          email: email,
+        },
+        data: {
+          password: payload.password,
+        },
+      });
+      await this.otpService.delete(payload.id);
+      return {
+        message: 'Password reset successfully',
+      };
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new NotFoundException('User not found');
+        }
+      }
       throw error;
     }
   }
